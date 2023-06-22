@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/putna-knijka/static/css/main.6ae91eeb.css",
+    "main.js": "/putna-knijka/static/js/main.dd0d86b3.js",
+    "index.html": "/putna-knijka/index.html",
+    "main.6ae91eeb.css.map": "/putna-knijka/static/css/main.6ae91eeb.css.map",
+    "main.dd0d86b3.js.map": "/putna-knijka/static/js/main.dd0d86b3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6ae91eeb.css",
+    "static/js/main.dd0d86b3.js"
+  ]
+}
