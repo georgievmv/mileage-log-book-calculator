@@ -83,7 +83,7 @@ const Form: React.FC<{
               id="km"
               value={km}
               min={0}
-              max={999}
+              max={5000}
               onChange={(e) => setKm(parseInt(e.target.value))}
               type="number"
               name="km"
@@ -103,7 +103,7 @@ const Form: React.FC<{
               }}
               value={city}
               min={0}
-              max={999}
+              max={5000}
             />
             <p>км в градски условия (10%)</p>
           </div>
@@ -121,7 +121,7 @@ const Form: React.FC<{
               }}
               value={winter}
               min={0}
-              max={999}
+              max={5000}
               type="number"
             />
             <p>км в зимни условия (10%)</p>
@@ -141,7 +141,7 @@ const Form: React.FC<{
               }}
               value={convoy}
               min={0}
-              max={999}
+              max={5000}
             />
             <p>км в колона (25%)</p>
           </div>
@@ -160,7 +160,7 @@ const Form: React.FC<{
               }}
               value={ac}
               min={0}
-              max={999}
+              max={5000}
             />
             <p>с включен климатик (10%)</p>
           </div>
@@ -169,7 +169,7 @@ const Form: React.FC<{
         <div className="form-group">
           <div className="left-hand-side">
             <p>Вътрешно гаражни</p>
-            <input onChange={garageChangeHandler} value={garage} max={2} min={1} type="number" />
+            <input onChange={garageChangeHandler} value={garage} max={31} min={1} type="number" />
             <p>дни по (2%)</p>
           </div>
           <p className="result">

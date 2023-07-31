@@ -8,7 +8,11 @@ export type Car = {
   img: string;
 };
 const cars: Car[] = [
-  { name: 'Шевролет Круз', consumption: 8.5, img: '806855-Cruze-Chevrolet-Back-view.jpg' },
+  {
+    name: 'Шевролет Круз',
+    consumption: 8.5,
+    img: '806855-Cruze-Chevrolet-Back-view.jpg',
+  },
   {
     name: 'Лада Нива',
     consumption: 10.5,

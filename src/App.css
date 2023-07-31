@@ -18,19 +18,17 @@ body {
   position: absolute;
   object-fit: cover;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  height: 40rem;
   left: 0px;
   z-index: 1;
   top: 0px;
 }
 .form-container {
   display: flex;
-
-  height: 100vh;
 }
 
 .form {
-  max-height: 100vh;
   border-radius: 50px;
   padding-block: 1rem;
   position: relative;
