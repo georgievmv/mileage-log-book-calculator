@@ -21,9 +21,6 @@ const Form: React.FC<{
   const [resultGarage, setResultGarage] = useState<number>(0);
 
   const garageChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (parseInt(e.currentTarget.value) > 2) {
-      return;
-    }
     setGarage(parseInt(e.currentTarget.value));
   };
 
