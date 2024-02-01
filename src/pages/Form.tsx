@@ -80,7 +80,7 @@ const Form: React.FC<{
               id="km"
               value={km}
               min={0}
-              max={5000}
+              max={10000}
               onChange={(e) => setKm(parseInt(e.target.value))}
               type="number"
               name="km"
@@ -100,7 +100,7 @@ const Form: React.FC<{
               }}
               value={city}
               min={0}
-              max={5000}
+              max={10000}
             />
             <p>км в градски условия (10%)</p>
           </div>
@@ -118,7 +118,7 @@ const Form: React.FC<{
               }}
               value={winter}
               min={0}
-              max={5000}
+              max={10000}
               type="number"
             />
             <p>км в зимни условия (10%)</p>
@@ -138,7 +138,7 @@ const Form: React.FC<{
               }}
               value={convoy}
               min={0}
-              max={5000}
+              max={10000}
             />
             <p>км в колона (25%)</p>
           </div>
@@ -157,7 +157,7 @@ const Form: React.FC<{
               }}
               value={ac}
               min={0}
-              max={5000}
+              max={10000}
             />
             <p>с включен климатик (10%)</p>
           </div>
