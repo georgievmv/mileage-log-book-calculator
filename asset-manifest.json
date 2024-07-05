@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/mileage-log-book-calculator/static/css/main.73ee7632.css",
-    "main.js": "/mileage-log-book-calculator/static/js/main.3cd1c5fc.js",
+    "main.css": "/mileage-log-book-calculator/static/css/main.5267cb84.css",
+    "main.js": "/mileage-log-book-calculator/static/js/main.777bf612.js",
     "index.html": "/mileage-log-book-calculator/index.html",
-    "main.73ee7632.css.map": "/mileage-log-book-calculator/static/css/main.73ee7632.css.map",
-    "main.3cd1c5fc.js.map": "/mileage-log-book-calculator/static/js/main.3cd1c5fc.js.map"
+    "main.5267cb84.css.map": "/mileage-log-book-calculator/static/css/main.5267cb84.css.map",
+    "main.777bf612.js.map": "/mileage-log-book-calculator/static/js/main.777bf612.js.map"
   },
   "entrypoints": [
-    "static/css/main.73ee7632.css",
-    "static/js/main.3cd1c5fc.js"
+    "static/css/main.5267cb84.css",
+    "static/js/main.777bf612.js"
   ]
 }
