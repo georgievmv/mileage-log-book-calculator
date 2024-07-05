@@ -13,12 +13,10 @@ const Cars: React.FC<{
     <div>
       {cars.map((elem) => {
         return (
-          <button className="car-button" id={elem.name} key={elem.name} onClick={carSelectHandler}>
-            <img src={elem.img} alt="" />
-            <div className="car-button-backdrop">
+          <div className="car-button" id={elem.name} key={elem.name} onClick={carSelectHandler}>
+              <img src={elem.img} alt="" />
               <p className="car-button-name">{elem.name}</p>
-            </div>
-          </button>
+          </div>
         );
       })}
     </div>
