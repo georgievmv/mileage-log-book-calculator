@@ -96,6 +96,17 @@ input:focus {
     -webkit-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
     -moz-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
   position: relative;
+  &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-image: linear-gradient(to bottom right, blue, #dc4225);
+      opacity: .6;
+      border-radius: 30px;
+    }
 }
 
 .car-button img {
@@ -109,6 +120,7 @@ input:focus {
 
 
 .car-button-name {
+  white-space: nowrap;
   z-index: 2;
   font-size: 2rem;
   color: white;
