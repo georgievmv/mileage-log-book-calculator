@@ -18,6 +18,11 @@ const cars: Car[] = [
     consumption: 10.5,
     img: 'mountains-lada-niva-ваз2121-lada-niva-wallpaper-preview.jpg',
   },
+  {
+    name: 'Рено Меган',
+    consumption: 6.5,
+    img: "IMG_1885.JPEG",
+  },
 ];
 
 function App() {
