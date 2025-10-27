@@ -16,7 +16,7 @@ const cars: Car[] = [
   {
     name: 'Форд Фиеста',
     consumption: 8,
-    img: 'ford-fies.jpg',
+    img: 'ford-fiesta.jpg',
   },
   {
     name: 'Лада Нива',
