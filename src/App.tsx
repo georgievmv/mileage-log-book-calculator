@@ -14,6 +14,11 @@ const cars: Car[] = [
     img: '806855-Cruze-Chevrolet-Back-view.jpg',
   },
   {
+    name: 'Форд Фиеста',
+    consumption: 8,
+    img: 'ford-fies.jpg',
+  },
+  {
     name: 'Лада Нива',
     consumption: 10.5,
     img: 'mountains-lada-niva-ваз2121-lada-niva-wallpaper-preview.jpg',
