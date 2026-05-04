@@ -1,7 +1,7 @@
-import './App.css';
-import Form from './pages/Form';
-import Cars from './pages/Cars';
-import { useState } from 'react';
+import "./App.css";
+import Form from "./pages/Form";
+import Cars from "./pages/Cars";
+import { useState } from "react";
 export type Car = {
   name: string;
   consumption: number;
@@ -9,33 +9,46 @@ export type Car = {
 };
 const cars: Car[] = [
   {
-    name: 'Мицубиши',
+    name: "Шевролет",
+    consumption: 8.5,
+    img: "806855-Cruze-Chevrolet-Back-view.jpg",
+  },
+  {
+    name: "Мицубиши",
     consumption: 8.19,
-    img: '806855-Cruze-Chevrolet-Back-view.jpg',
+    img: "806855-Cruze-Chevrolet-Back-view.jpg",
   },
   {
-    name: 'Форд Фиеста',
+    name: "Форд Фиеста",
     consumption: 8,
-    img: 'ford-fiesta.jpg',
+    img: "ford-fiesta.jpg",
   },
   {
-    name: 'Лада Нива',
+    name: "Лада Нива",
     consumption: 10.5,
-    img: 'mountains-lada-niva-ваз2121-lada-niva-wallpaper-preview.jpg',
+    img: "mountains-lada-niva-ваз2121-lada-niva-wallpaper-preview.jpg",
   },
   {
-    name: 'Рено Меган',
+    name: "Рено Меган",
     consumption: 6.5,
     img: "IMG_1885.JPEG",
   },
 ];
 
 function App() {
-  const [selectedCar, setSelectedCar] = useState<Car>({ name: '', consumption: 0, img: '' });
+  const [selectedCar, setSelectedCar] = useState<Car>({
+    name: "",
+    consumption: 0,
+    img: "",
+  });
   return (
     <div className="App">
-      {!selectedCar.name && <Cars setSelectedCar={setSelectedCar} cars={cars} />}
-      {selectedCar.name && <Form setSelectedCar={setSelectedCar} selectedCar={selectedCar} />}
+      {!selectedCar.name && (
+        <Cars setSelectedCar={setSelectedCar} cars={cars} />
+      )}
+      {selectedCar.name && (
+        <Form setSelectedCar={setSelectedCar} selectedCar={selectedCar} />
+      )}
     </div>
   );
 }
