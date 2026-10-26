@@ -34,6 +34,10 @@ const initialQuantities: Quantities = {
   garageDays: "1",
 };
 
+const DISTANCE_MAX = 10000;
+const GARAGE_DAYS_MIN = 1;
+const GARAGE_DAYS_MAX = 31;
+
 const localDate = (date: Date) => {
   const offset = date.getTimezoneOffset() * 60_000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 10);
@@ -94,10 +98,10 @@ const Form: React.FC<{
       values.airConditioningDistance,
     ];
     if (
-      distances.some((distance) => !Number.isInteger(distance) || distance > 10000) ||
+      distances.some((distance) => !Number.isInteger(distance) || distance > DISTANCE_MAX) ||
       !Number.isInteger(values.garageDays) ||
-      values.garageDays < 1 ||
-      values.garageDays > 31
+      values.garageDays < GARAGE_DAYS_MIN ||
+      values.garageDays > GARAGE_DAYS_MAX
     ) {
       setError("Километрите трябва да са цели числа до 10000, а гаражните дни – от 1 до 31.");
       return;
@@ -146,12 +150,12 @@ const Form: React.FC<{
     testId: string;
     result?: number;
   }> = [
-    { name: "totalDistance", label: "Общо километри", description: `км по основна разходна норма (${selectedCar.consumption} %)`, max: 10000, testId: "fuel-base", result: calculation?.fuel.base },
-    { name: "cityDistance", label: "Километри в градски условия", description: "км в градски условия (10%)", max: 10000, testId: "fuel-city", result: calculation?.fuel.city },
-    { name: "winterDistance", label: "Километри в зимни условия", description: "км в зимни условия (10%)", max: 10000, testId: "fuel-winter", result: calculation?.fuel.winter },
-    { name: "convoyDistance", label: "Километри в колона", description: "км в колона (25%)", max: 10000, testId: "fuel-convoy", result: calculation?.fuel.convoy },
-    { name: "airConditioningDistance", label: "Километри с включен климатик", description: "км с включен климатик (10%)", max: 10000, testId: "fuel-ac", result: calculation?.fuel.airConditioning },
-    { name: "garageDays", label: "Вътрешно гаражни дни", description: "дни по (2%)", max: 31, testId: "fuel-garage", result: calculation?.fuel.garage },
+    { name: "totalDistance", label: "Общо километри", description: `км по основна разходна норма (${selectedCar.consumption} %)`, max: DISTANCE_MAX, testId: "fuel-base", result: calculation?.fuel.base },
+    { name: "cityDistance", label: "Километри в градски условия", description: "км в градски условия (10%)", max: DISTANCE_MAX, testId: "fuel-city", result: calculation?.fuel.city },
+    { name: "winterDistance", label: "Километри в зимни условия", description: "км в зимни условия (10%)", max: DISTANCE_MAX, testId: "fuel-winter", result: calculation?.fuel.winter },
+    { name: "convoyDistance", label: "Километри в колона", description: "км в колона (25%)", max: DISTANCE_MAX, testId: "fuel-convoy", result: calculation?.fuel.convoy },
+    { name: "airConditioningDistance", label: "Километри с включен климатик", description: "км с включен климатик (10%)", max: DISTANCE_MAX, testId: "fuel-ac", result: calculation?.fuel.airConditioning },
+    { name: "garageDays", label: "Вътрешно гаражни дни", description: "дни по (2%)", max: GARAGE_DAYS_MAX, testId: "fuel-garage", result: calculation?.fuel.garage },
   ];
 
   return (
@@ -167,7 +171,7 @@ const Form: React.FC<{
           <div className="form-group" key={field.name}>
             <div className="left-hand-side">
               <label className="visually-hidden" htmlFor={field.name}>{field.label}</label>
-              <input id={field.name} name={field.name} type="number" min={field.name === "garageDays" ? 1 : 0} max={field.max} value={quantities[field.name]} onChange={(event) => changeQuantity(field.name, event.target.value)} />
+              <input id={field.name} name={field.name} type="number" min={field.name === "garageDays" ? GARAGE_DAYS_MIN : 0} max={field.max} value={quantities[field.name]} onChange={(event) => changeQuantity(field.name, event.target.value)} />
               <p>{field.description}</p>
             </div>
             <p className="result" data-testid={field.testId}>{field.result === undefined ? "" : displayFuel(field.result)}</p>
