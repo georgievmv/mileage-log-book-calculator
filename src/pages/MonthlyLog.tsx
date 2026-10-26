@@ -92,9 +92,10 @@ const MonthlyLog: React.FC<{ db: Firestore; cars: Car[]; onEdit: (entry: DailyVe
   return <main className="monthly-log">
     <h1>Месечен дневник</h1>
     <div className="monthly-filters">
-      <label>Автомобил<select value={vehicleId} onChange={(event) => setVehicleId(event.target.value)}>{cars.map((car) => <option key={car.id} value={car.id}>{car.name}</option>)}</select></label>
-      <label>Месец<input type="month" value={month} onChange={(event) => setMonth(event.target.value)} /></label>
+      <label>Автомобил<select value={vehicleId} onChange={(event) => { setEntries([]); setVehicleId(event.target.value); }}>{cars.map((car) => <option key={car.id} value={car.id}>{car.name}</option>)}</select></label>
+      <label>Месец<input type="month" value={month} onChange={(event) => { setEntries([]); setMonth(event.target.value); }} /></label>
     </div>
+    <p className="concurrency-note">При едновременни корекции се запазва последната записана версия. Часът на последната промяна е показан за всеки запис.</p>
     {status === "loading" && <p role="status">Зареждане на месечния дневник…</p>}
     {status === "error" && <div role="alert"><p>Дневникът не може да бъде прочетен. Показаните данни може да са остарели.</p><button type="button" onClick={() => setRetry((value) => value + 1)}>Опитай отново</button></div>}
     {status === "ready" && isCached && <p className="cache-status" role="status">Показват се запазени данни от устройството. Те може да са остарели, докато няма връзка.</p>}
