@@ -64,7 +64,7 @@ function App() {
         <button className="logout-button" onClick={() => signOut(firebaseServices.auth)} type="button">Изход</button>
       </header>
       {page === "monthly-log" ? <MonthlyLog /> : selectedCar.name ? (
-        <Form setSelectedCar={setSelectedCar} selectedCar={selectedCar} />
+        <Form db={firebaseServices.db} setSelectedCar={setSelectedCar} selectedCar={selectedCar} />
       ) : (
         <Cars setSelectedCar={setSelectedCar} cars={cars} />
       )}

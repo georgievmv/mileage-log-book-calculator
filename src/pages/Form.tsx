@@ -1,29 +1,10 @@
-import React, { useState } from "react";
+import { Firestore } from "firebase/firestore";
+import React, { useEffect, useRef, useState } from "react";
 import { Car } from "../App";
+import { DailyVehicleCalculation, DailyVehicleQuantities } from "../dailyEntry";
+import { prepareDailyEntrySave } from "../dailyEntries";
 
-type Quantities = {
-  totalDistance: string;
-  cityDistance: string;
-  winterDistance: string;
-  convoyDistance: string;
-  airConditioningDistance: string;
-  garageDays: string;
-};
-
-export type DailyVehicleCalculation = {
-  drivingDate: string;
-  vehicle: Car;
-  quantities: Record<keyof Quantities, number>;
-  fuel: {
-    base: number;
-    city: number;
-    winter: number;
-    convoy: number;
-    airConditioning: number;
-    garage: number;
-    total: number;
-  };
-};
+type Quantities = DailyVehicleQuantities;
 
 const initialQuantities: Quantities = {
   totalDistance: "",
@@ -47,25 +28,38 @@ const recordedFuel = (value: number) => Math.round((value + Number.EPSILON) * 10
 const displayFuel = (value: number) => value.toFixed(3);
 
 const Form: React.FC<{
+  db: Firestore;
   setSelectedCar: React.Dispatch<React.SetStateAction<Car>>;
   selectedCar: Car;
-}> = ({ selectedCar, setSelectedCar }) => {
+}> = ({ db, selectedCar, setSelectedCar }) => {
   const today = localDate(new Date());
   const [drivingDate, setDrivingDate] = useState(today);
   const [quantities, setQuantities] = useState<Quantities>(initialQuantities);
   const [calculation, setCalculation] = useState<DailyVehicleCalculation | null>(null);
   const [error, setError] = useState("");
+  const [saveStatus, setSaveStatus] = useState<
+    "idle" | "checking" | "saving" | "pending" | "saved" | "error"
+  >("idle");
+  const stopWatchingSave = useRef<(() => void) | null>(null);
+
+  useEffect(() => () => stopWatchingSave.current?.(), []);
+
+  const invalidateCalculation = () => {
+    setCalculation(null);
+    setError("");
+    setSaveStatus((current) =>
+      current === "pending" || current === "saving" ? current : "idle"
+    );
+  };
 
   const changeQuantity = (name: keyof Quantities, value: string) => {
     setQuantities((current) => ({ ...current, [name]: value }));
-    setCalculation(null);
-    setError("");
+    invalidateCalculation();
   };
 
   const changeDrivingDate = (value: string) => {
     setDrivingDate(value);
-    setCalculation(null);
-    setError("");
+    invalidateCalculation();
   };
 
   const formSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
@@ -134,12 +128,49 @@ const Form: React.FC<{
     );
     setError("");
     setCalculation({ drivingDate, vehicle: selectedCar, quantities: values, fuel });
+    setSaveStatus("idle");
+  };
+
+  const saveEntry = async () => {
+    if (
+      !calculation ||
+      saveStatus === "checking" ||
+      saveStatus === "saving" ||
+      saveStatus === "pending"
+    ) return;
+
+    setSaveStatus("checking");
+    try {
+      const preparedSave = await prepareDailyEntrySave(db, calculation);
+      if (
+        preparedSave.existed &&
+        !window.confirm(
+          "Вече има запис за този автомобил и дата. Искате ли да го замените?"
+        )
+      ) {
+        setSaveStatus("idle");
+        return;
+      }
+
+      stopWatchingSave.current?.();
+      setSaveStatus(navigator.onLine ? "saving" : "pending");
+      stopWatchingSave.current = preparedSave.start(
+        (isPending) => setSaveStatus(isPending ? "pending" : "saved"),
+        () => setSaveStatus("error"),
+        () => window.confirm(
+          "Междувременно е създаден запис за този автомобил и дата. Искате ли да го замените?"
+        )
+      );
+    } catch {
+      setSaveStatus("error");
+    }
   };
 
   const reset = () => {
     setQuantities(initialQuantities);
     setCalculation(null);
     setError("");
+    setSaveStatus("idle");
   };
 
   const fields: Array<{
@@ -185,7 +216,36 @@ const Form: React.FC<{
               <p className="result" data-testid="fuel-total">{displayFuel(calculation.fuel.total)}</p>
             </div>
             <p className="calculation-status">Готово за запис</p>
+            <button
+              className="form-button save-button"
+              disabled={
+                saveStatus === "checking" ||
+                saveStatus === "saving" ||
+                saveStatus === "pending"
+              }
+              onClick={saveEntry}
+              type="button"
+            >
+              {saveStatus === "checking" || saveStatus === "saving"
+                ? "Записване…"
+                : saveStatus === "error"
+                  ? "Опитай запис отново"
+                  : "Запиши"}
+            </button>
           </>
+        )}
+        {saveStatus === "pending" && (
+          <p className="save-status pending" role="status">
+            Записът чака синхронизиране. Може да продължите работа.
+          </p>
+        )}
+        {saveStatus === "saved" && (
+          <p className="save-status success" role="status">Записът е запазен успешно.</p>
+        )}
+        {saveStatus === "error" && (
+          <p className="save-error" role="alert">
+            Записът не беше запазен. Данните са запазени във формата — опитайте отново.
+          </p>
         )}
         <button className="form-button" type="submit">Пресметни</button>
         <button className="form-button" onClick={() => setSelectedCar({ id: "", name: "", consumption: 0, img: "" })} type="button">Назад</button>
