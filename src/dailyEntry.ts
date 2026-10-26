@@ -1,4 +1,5 @@
 import type { Car } from "./App";
+import type { Timestamp } from "firebase/firestore";
 
 export type DailyVehicleQuantities = {
   totalDistance: string;
@@ -22,4 +23,10 @@ export type DailyVehicleCalculation = {
     garage: number;
     total: number;
   };
+};
+
+export type DailyVehicleEntry = DailyVehicleCalculation & {
+  id: string;
+  createdAt: Timestamp | null;
+  updatedAt: Timestamp | null;
 };

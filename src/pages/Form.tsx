@@ -1,7 +1,7 @@
 import { Firestore } from "firebase/firestore";
 import React, { useEffect, useRef, useState } from "react";
 import { Car } from "../App";
-import { DailyVehicleCalculation, DailyVehicleQuantities } from "../dailyEntry";
+import { DailyVehicleCalculation, DailyVehicleEntry, DailyVehicleQuantities } from "../dailyEntry";
 import { prepareDailyEntrySave } from "../dailyEntries";
 
 type Quantities = DailyVehicleQuantities;
@@ -29,12 +29,21 @@ const displayFuel = (value: number) => value.toFixed(3);
 
 const Form: React.FC<{
   db: Firestore;
+  cars: Car[];
+  editingEntry: DailyVehicleEntry | null;
   setSelectedCar: React.Dispatch<React.SetStateAction<Car>>;
   selectedCar: Car;
-}> = ({ db, selectedCar, setSelectedCar }) => {
+}> = ({ db, cars, editingEntry, selectedCar, setSelectedCar }) => {
   const today = localDate(new Date());
-  const [drivingDate, setDrivingDate] = useState(today);
-  const [quantities, setQuantities] = useState<Quantities>(initialQuantities);
+  const [drivingDate, setDrivingDate] = useState(editingEntry?.drivingDate ?? today);
+  const [quantities, setQuantities] = useState<Quantities>(() => editingEntry ? {
+    totalDistance: String(editingEntry.quantities.totalDistance),
+    cityDistance: String(editingEntry.quantities.cityDistance),
+    winterDistance: String(editingEntry.quantities.winterDistance),
+    convoyDistance: String(editingEntry.quantities.convoyDistance),
+    airConditioningDistance: String(editingEntry.quantities.airConditioningDistance),
+    garageDays: String(editingEntry.quantities.garageDays),
+  } : initialQuantities);
   const [calculation, setCalculation] = useState<DailyVehicleCalculation | null>(null);
   const [error, setError] = useState("");
   const [saveStatus, setSaveStatus] = useState<
@@ -141,7 +150,7 @@ const Form: React.FC<{
 
     setSaveStatus("checking");
     try {
-      const preparedSave = await prepareDailyEntrySave(db, calculation);
+      const preparedSave = await prepareDailyEntrySave(db, calculation, editingEntry ?? undefined);
       if (
         preparedSave.existed &&
         !window.confirm(
@@ -194,6 +203,13 @@ const Form: React.FC<{
       <img className="background-image" src={selectedCar.img} alt="" />
       <form className="form" data-testid="selected-vehicle" data-vehicle-id={selectedCar.id} noValidate onSubmit={formSubmitHandler}>
         <h1>{selectedCar.name}</h1>
+        {editingEntry && <div className="form-group edit-vehicle">
+          <label htmlFor="edit-vehicle">Автомобил</label>
+          <select id="edit-vehicle" value={selectedCar.id} onChange={(event) => {
+            const car = cars.find((item) => item.id === event.target.value);
+            if (car) { setSelectedCar(car); invalidateCalculation(); }
+          }}>{cars.map((car) => <option key={car.id} value={car.id}>{car.name}</option>)}</select>
+        </div>}
         <div className="form-group">
           <label htmlFor="driving-date">Дата на пътуване</label>
           <input id="driving-date" name="drivingDate" type="date" max={today} value={drivingDate} onChange={(event) => changeDrivingDate(event.target.value)} />
@@ -230,7 +246,7 @@ const Form: React.FC<{
                 ? "Записване…"
                 : saveStatus === "error"
                   ? "Опитай запис отново"
-                  : "Запиши"}
+                : editingEntry ? "Запиши корекцията" : "Запиши"}
             </button>
           </>
         )}

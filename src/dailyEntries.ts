@@ -8,10 +8,10 @@ import {
   onSnapshot,
   runTransaction,
   serverTimestamp,
-  setDoc,
   Timestamp,
+  writeBatch,
 } from "firebase/firestore";
-import type { DailyVehicleCalculation } from "./dailyEntry";
+import type { DailyVehicleCalculation, DailyVehicleEntry } from "./dailyEntry";
 
 export const DAILY_ENTRIES_COLLECTION = "dailyVehicleEntries";
 
@@ -20,7 +20,7 @@ export const dailyEntryId = (vehicleId: string, drivingDate: string) =>
 
 const entryData = (
   calculation: DailyVehicleCalculation,
-  existingEntry?: DocumentData
+  createdAt?: Timestamp | null
 ) => ({
   drivingDate: calculation.drivingDate,
   monthKey: calculation.drivingDate.slice(0, 7),
@@ -29,10 +29,7 @@ const entryData = (
   consumptionRate: calculation.vehicle.consumption,
   quantities: calculation.quantities,
   fuel: calculation.fuel,
-  createdAt:
-    existingEntry?.createdAt instanceof Timestamp
-      ? existingEntry.createdAt
-      : serverTimestamp(),
+  createdAt: createdAt instanceof Timestamp ? createdAt : serverTimestamp(),
   updatedAt: serverTimestamp(),
 });
 
@@ -49,13 +46,18 @@ class ConcurrentEntryError extends Error {}
 
 export const prepareDailyEntrySave = async (
   db: Firestore,
-  calculation: DailyVehicleCalculation
+  calculation: DailyVehicleCalculation,
+  originalEntry?: DailyVehicleEntry
 ): Promise<SaveEntryResult> => {
   const reference = doc(
     db,
     DAILY_ENTRIES_COLLECTION,
     dailyEntryId(calculation.vehicle.id, calculation.drivingDate)
   );
+  const originalReference = originalEntry
+    ? doc(db, DAILY_ENTRIES_COLLECTION, originalEntry.id)
+    : reference;
+  const identityChanged = originalReference.path !== reference.path;
 
   let existing: DocumentSnapshot<DocumentData> | undefined;
   let useQueuedWrite = !navigator.onLine;
@@ -82,10 +84,17 @@ export const prepareDailyEntrySave = async (
         const saveInTransaction = (replacementConfirmed: boolean): Promise<void> =>
           runTransaction(db, async (transaction) => {
             const current = await transaction.get(reference);
+            const original = identityChanged
+              ? await transaction.get(originalReference)
+              : current;
             if (current.exists() && !existing?.exists() && !replacementConfirmed) {
               throw new ConcurrentEntryError();
             }
-            transaction.set(reference, entryData(calculation, current.data()));
+            const creationTime = identityChanged
+              ? original.data()?.createdAt ?? originalEntry?.createdAt
+              : current.data()?.createdAt;
+            transaction.set(reference, entryData(calculation, creationTime));
+            if (identityChanged) transaction.delete(originalReference);
           }).then(() => undefined);
 
         saveInTransaction(false).catch((error) => {
@@ -100,7 +109,16 @@ export const prepareDailyEntrySave = async (
         return () => { cancelled = true; };
       }
 
-      setDoc(reference, entryData(calculation, existing?.data())).catch(onError);
+      const batch = writeBatch(db);
+      batch.set(
+        reference,
+        entryData(
+          calculation,
+          identityChanged ? originalEntry?.createdAt : existing?.data()?.createdAt
+        )
+      );
+      if (identityChanged) batch.delete(originalReference);
+      batch.commit().catch(onError);
       const unsubscribe = onSnapshot(
         reference,
         { includeMetadataChanges: true },

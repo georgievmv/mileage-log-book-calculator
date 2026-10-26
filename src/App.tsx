@@ -6,6 +6,7 @@ import Cars from "./pages/Cars";
 import Form from "./pages/Form";
 import Login from "./pages/Login";
 import MonthlyLog from "./pages/MonthlyLog";
+import { DailyVehicleEntry } from "./dailyEntry";
 
 export type Car = { id: string; name: string; consumption: number; img: string };
 
@@ -25,6 +26,7 @@ function App() {
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [page, setPage] = useState<Page>("calculator");
   const [selectedCar, setSelectedCar] = useState<Car>(emptyCar);
+  const [editingEntry, setEditingEntry] = useState<DailyVehicleEntry | null>(null);
 
   useEffect(() => {
     let unsubscribe: () => void = () => undefined;
@@ -58,13 +60,17 @@ function App() {
     <div className="App">
       <header className="app-header">
         <nav aria-label="Основна навигация">
-          <button aria-current={page === "calculator" ? "page" : undefined} onClick={() => setPage("calculator")} type="button">Калкулатор</button>
-          <button aria-current={page === "monthly-log" ? "page" : undefined} onClick={() => setPage("monthly-log")} type="button">Месечен дневник</button>
+          <button aria-current={page === "calculator" ? "page" : undefined} onClick={() => { setEditingEntry(null); setPage("calculator"); }} type="button">Калкулатор</button>
+          <button aria-current={page === "monthly-log" ? "page" : undefined} onClick={() => { setEditingEntry(null); setPage("monthly-log"); }} type="button">Месечен дневник</button>
         </nav>
         <button className="logout-button" onClick={() => signOut(firebaseServices.auth)} type="button">Изход</button>
       </header>
-      {page === "monthly-log" ? <MonthlyLog /> : selectedCar.name ? (
-        <Form db={firebaseServices.db} setSelectedCar={setSelectedCar} selectedCar={selectedCar} />
+      {page === "monthly-log" ? <MonthlyLog db={firebaseServices.db} cars={cars} onEdit={(entry) => {
+        setEditingEntry(entry);
+        setSelectedCar(cars.find((car) => car.id === entry.vehicle.id) ?? entry.vehicle);
+        setPage("calculator");
+      }} /> : selectedCar.name ? (
+        <Form key={editingEntry?.id ?? selectedCar.id} db={firebaseServices.db} cars={cars} editingEntry={editingEntry} setSelectedCar={setSelectedCar} selectedCar={selectedCar} />
       ) : (
         <Cars setSelectedCar={setSelectedCar} cars={cars} />
       )}
