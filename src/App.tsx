@@ -21,7 +21,7 @@ const cars: Car[] = [
     id: "chevrolet",
     name: "Шевролет",
     consumption: 8.5,
-    img: "mileage-log-book-calculator/806855-Cruze-Chevrolet-Back-view.jpg",
+    img: "806855-Cruze-Chevrolet-Back-view.jpg",
   },
   {
     id: "mitsubishi",
