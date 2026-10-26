@@ -1,5 +1,11 @@
 # Mileage Log Book Calculator
 
+The workplace log calculates and stores daily vehicle fuel records and presents per-vehicle monthly totals. The physical notebook remains the official record.
+
+Production: <https://georgievmv.github.io/mileage-log-book-calculator/>
+
+See [the production runbook](docs/production-runbook.md) for GitHub Pages deployment, Firebase configuration and security-rule deployment, shared-account recovery, trusted-device guidance, and the manual release checklist.
+
 ## Firebase workplace setup
 
 The workplace owner creates and recovers the shared account; its password must only be distributed through the workplace's approved secret-sharing channel and must never be added to this repository.
@@ -13,6 +19,10 @@ The workplace owner creates and recovers the shared account; its password must o
 7. If access is lost, the workplace Firebase-project owner resets the shared account password in Firebase Authentication and redistributes it through the approved secret-sharing channel. Developers do not need and should not receive the password.
 
 The app deliberately stops with a Bulgarian configuration error when a required Firebase value is absent. Authentication is persisted locally and Firestore uses persistent multi-tab offline caching, so only trusted workplace devices should be used.
+
+## Production deployment
+
+Run `npm run deploy` from a maintainer machine whose ignored `.env.local` contains the production Firebase web-app configuration. The existing `gh-pages` deployment builds the application and publishes `build/` to the `gh-pages` branch. GitHub Pages must continue publishing from that branch, and `georgievmv.github.io` must be an authorized Firebase Authentication domain.
 
 # Getting Started with Create React App
 
