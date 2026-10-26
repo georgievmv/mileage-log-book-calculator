@@ -86,6 +86,22 @@ const Form: React.FC<{
       setError("Стойностите не могат да бъдат отрицателни.");
       return;
     }
+    const distances = [
+      values.totalDistance,
+      values.cityDistance,
+      values.winterDistance,
+      values.convoyDistance,
+      values.airConditioningDistance,
+    ];
+    if (
+      distances.some((distance) => !Number.isInteger(distance) || distance > 10000) ||
+      !Number.isInteger(values.garageDays) ||
+      values.garageDays < 1 ||
+      values.garageDays > 31
+    ) {
+      setError("Километрите трябва да са цели числа до 10000, а гаражните дни – от 1 до 31.");
+      return;
+    }
     const conditionDistances = [
       values.cityDistance,
       values.winterDistance,
@@ -151,7 +167,7 @@ const Form: React.FC<{
           <div className="form-group" key={field.name}>
             <div className="left-hand-side">
               <label className="visually-hidden" htmlFor={field.name}>{field.label}</label>
-              <input id={field.name} name={field.name} type="number" step="any" min={0} max={field.max} value={quantities[field.name]} onChange={(event) => changeQuantity(field.name, event.target.value)} />
+              <input id={field.name} name={field.name} type="number" min={field.name === "garageDays" ? 1 : 0} max={field.max} value={quantities[field.name]} onChange={(event) => changeQuantity(field.name, event.target.value)} />
               <p>{field.description}</p>
             </div>
             <p className="result" data-testid={field.testId}>{field.result === undefined ? "" : displayFuel(field.result)}</p>

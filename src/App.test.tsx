@@ -50,6 +50,23 @@ test("negative values and a condition distance above the total are rejected", ()
   );
 });
 
+test("the existing whole-number mileage and quantity limits remain enforced", () => {
+  render(<App />);
+  userEvent.click(screen.getByRole("button", { name: "Шевролет" }));
+
+  fireEvent.change(screen.getByLabelText("Общо километри"), { target: { value: "10.5" } });
+  userEvent.click(screen.getByRole("button", { name: "Пресметни" }));
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Километрите трябва да са цели числа до 10000, а гаражните дни – от 1 до 31."
+  );
+
+  fireEvent.change(screen.getByLabelText("Общо километри"), { target: { value: "10001" } });
+  userEvent.click(screen.getByRole("button", { name: "Пресметни" }));
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Километрите трябва да са цели числа до 10000, а гаражните дни – от 1 до 31."
+  );
+});
+
 test("recorded components are rounded to three decimals and their visible sum is the total", () => {
   render(<App />);
   userEvent.click(screen.getByRole("button", { name: "Шевролет" }));
