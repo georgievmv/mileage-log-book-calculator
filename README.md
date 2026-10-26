@@ -1,3 +1,19 @@
+# Mileage Log Book Calculator
+
+## Firebase workplace setup
+
+The workplace owner creates and recovers the shared account; its password must only be distributed through the workplace's approved secret-sharing channel and must never be added to this repository.
+
+1. Create a dedicated Firebase project on the Spark plan under the workplace Google account.
+2. Create Cloud Firestore in `europe-central2` (Warsaw).
+3. Enable Email/Password in Firebase Authentication and create exactly the shared operator account.
+4. Register a web app, copy `.env.example` to `.env.local`, and fill in the web configuration. These identifiers are not passwords, but environment-specific values stay out of source control.
+5. Copy the shared account's non-secret UID from Authentication into `firestore.rules`, replacing `REPLACE_WITH_SHARED_OPERATOR_UID`. The placeholder fails closed until this is done.
+6. Set `$env:FIREBASE_PROJECT_ID` to the dedicated project ID, then deploy to that explicit target with `firebase deploy --only firestore:rules --project $env:FIREBASE_PROJECT_ID`. Do not rely on a Firebase CLI default project.
+7. If access is lost, the workplace Firebase-project owner resets the shared account password in Firebase Authentication and redistributes it through the approved secret-sharing channel. Developers do not need and should not receive the password.
+
+The app deliberately stops with a Bulgarian configuration error when a required Firebase value is absent. Authentication is persisted locally and Firestore uses persistent multi-tab offline caching, so only trusted workplace devices should be used.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
