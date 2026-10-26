@@ -13,8 +13,12 @@ body {
   z-index: 3;
 }
 
-.app-header nav { display: flex; gap: 0.5rem; }
-.app-header button, .primary-button {
+.app-header nav {
+  display: flex;
+  gap: 0.5rem;
+}
+.app-header button,
+.primary-button {
   background: transparent;
   border: 1px solid #fff;
   border-radius: 0.5rem;
@@ -23,9 +27,24 @@ body {
   font-size: 1rem;
   padding: 0.65rem 0.85rem;
 }
-.app-header button[aria-current="page"], .primary-button { background: #156d3d; }
+.app-header button[aria-current="page"],
+.primary-button {
+  background: #156d3d;
+}
+.app-header .logout-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+.logout-button svg {
+  height: 1.35rem;
+  width: 1.35rem;
+}
 
-.login-page, .loading-page, .empty-page, .configuration-error {
+.login-page,
+.loading-page,
+.empty-page,
+.configuration-error {
   align-items: center;
   background: #eef2f4;
   box-sizing: border-box;
@@ -34,7 +53,11 @@ body {
   min-height: 100vh;
   padding: 1rem;
 }
-.configuration-error { color: #8b0000; flex-direction: column; text-align: center; }
+.configuration-error {
+  color: #8b0000;
+  flex-direction: column;
+  text-align: center;
+}
 
 .login-card {
   background: #fff;
@@ -46,25 +69,103 @@ body {
   padding: 2rem;
   width: 100%;
 }
-.login-card h1, .login-card p { margin: 0 0 0.5rem; }
-.login-card input { border: 1px solid #8c969f; border-radius: 0.4rem; padding: 0.65rem; text-align: left; }
-.login-card .primary-button:disabled { cursor: wait; opacity: 0.65; }
-.empty-page { min-height: calc(100vh - 4rem); text-align: center; flex-direction: column; }
+.login-card h1,
+.login-card p {
+  margin: 0 0 0.5rem;
+}
+.login-card input {
+  border: 1px solid #8c969f;
+  border-radius: 0.4rem;
+  padding: 0.65rem;
+  text-align: left;
+}
+.login-card .primary-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.empty-page {
+  min-height: calc(100vh - 4rem);
+  text-align: center;
+  flex-direction: column;
+}
 
-.monthly-log { background: #eef2f4; box-sizing: border-box; min-height: calc(100vh - 4rem); padding: 1.5rem; }
-.monthly-log h1 { margin-top: 0; }
-.monthly-filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
-.monthly-filters label { display: grid; font-weight: bold; gap: 0.35rem; }
-.monthly-filters input, .monthly-filters select, .edit-vehicle select { background: #fff; border: 1px solid #7b8791; border-radius: 0.35rem; font-size: 1rem; padding: 0.5rem; text-align: left; }
-.monthly-table-wrap { overflow-x: auto; }
-.monthly-table { background: #fff; border-collapse: collapse; min-width: 100%; white-space: nowrap; }
-.monthly-table th, .monthly-table td { border: 1px solid #aeb6bd; padding: 0.55rem; text-align: right; }
-.monthly-table th:first-child { text-align: left; }
-.monthly-table thead, .monthly-table tfoot { background: #dce5e9; }
-.row-actions { display: flex; gap: 0.4rem; }
-.row-actions button, .monthly-log [role="alert"] button { cursor: pointer; padding: 0.4rem; }
-.cache-status { color: #704f00; font-weight: bold; }
-.edit-vehicle { justify-content: center; gap: 1rem; }
+.monthly-log {
+  background: #eef2f4;
+  box-sizing: border-box;
+  min-height: calc(100vh - 4rem);
+  padding: 1.5rem;
+}
+.monthly-log h1 {
+  margin-top: 0;
+}
+.monthly-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.monthly-filters label {
+  display: grid;
+  font-weight: bold;
+  gap: 0.35rem;
+}
+.monthly-filters input,
+.monthly-filters select,
+.edit-vehicle select {
+  background: #fff;
+  border: 1px solid #7b8791;
+  border-radius: 0.35rem;
+  font-size: 1rem;
+  padding: 0.5rem;
+  text-align: left;
+}
+.monthly-table-wrap {
+  overflow-x: auto;
+}
+.monthly-table {
+  background: #fff;
+  border-collapse: collapse;
+  min-width: 100%;
+  white-space: nowrap;
+}
+.monthly-table th,
+.monthly-table td {
+  border: 1px solid #aeb6bd;
+  padding: 0.55rem;
+  text-align: right;
+}
+.monthly-table th:first-child {
+  text-align: left;
+}
+.monthly-table thead,
+.monthly-table tfoot {
+  background: #dce5e9;
+}
+.row-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+.row-actions button,
+.monthly-log [role="alert"] button {
+  cursor: pointer;
+  padding: 0.4rem;
+}
+.row-actions .danger-button {
+  background: #b42318;
+  border: 1px solid #8f1c13;
+  color: #fff;
+}
+.row-actions .danger-button:hover {
+  background: #8f1c13;
+}
+.cache-status {
+  color: #704f00;
+  font-weight: bold;
+}
+.edit-vehicle {
+  justify-content: center;
+  gap: 1rem;
+}
 
 .form-group {
   align-items: center;
@@ -78,8 +179,7 @@ body {
   position: absolute;
   object-fit: cover;
   width: 100vw;
-  min-height: 100vh;
-  height: 40rem;
+  height: 180vh;
   left: 0px;
   z-index: 1;
   top: 0px;
@@ -138,12 +238,27 @@ input:focus {
   color: #145214;
   font-weight: bold;
 }
-.save-button { background: #156d3d; color: #fff; }
-.save-button:disabled { cursor: wait; opacity: 0.65; }
-.save-status { font-weight: bold; }
-.save-status.pending { color: #704f00; }
-.save-status.success { color: #145214; }
-.save-error { margin-inline: auto; max-width: 35rem; }
+.save-button {
+  background: #156d3d;
+  color: #fff;
+}
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+.save-status {
+  font-weight: bold;
+}
+.save-status.pending {
+  color: #704f00;
+}
+.save-status.success {
+  color: #145214;
+}
+.save-error {
+  margin-inline: auto;
+  max-width: 35rem;
+}
 .form-group,
 .combined {
   font-weight: bold;
@@ -184,20 +299,20 @@ input:focus {
   margin: 1rem;
   cursor: pointer;
   box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
+  -webkit-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 3px 6px 8px 0px rgba(0, 0, 0, 0.75);
   position: relative;
   &:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background-image: linear-gradient(to bottom right, blue, #dc4225);
-      opacity: .6;
-      border-radius: 30px;
-    }
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: linear-gradient(to bottom right, blue, #dc4225);
+    opacity: 0.6;
+    border-radius: 30px;
+  }
 }
 
 .car-button img {
@@ -208,8 +323,6 @@ input:focus {
   width: 100%;
 }
 
-
-
 .car-button-name {
   white-space: nowrap;
   z-index: 2;
@@ -219,5 +332,4 @@ input:focus {
   top: -1.25rem;
   left: 50%;
   transform: translate(-50%);
-  
 }
