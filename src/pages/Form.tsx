@@ -1,200 +1,175 @@
-import React from 'react';
-import { Car } from '../App';
-import { useState } from 'react';
+import React, { useState } from "react";
+import { Car } from "../App";
+
+type Quantities = {
+  totalDistance: string;
+  cityDistance: string;
+  winterDistance: string;
+  convoyDistance: string;
+  airConditioningDistance: string;
+  garageDays: string;
+};
+
+export type DailyVehicleCalculation = {
+  drivingDate: string;
+  vehicle: Car;
+  quantities: Record<keyof Quantities, number>;
+  fuel: {
+    base: number;
+    city: number;
+    winter: number;
+    convoy: number;
+    airConditioning: number;
+    garage: number;
+    total: number;
+  };
+};
+
+const initialQuantities: Quantities = {
+  totalDistance: "",
+  cityDistance: "",
+  winterDistance: "",
+  convoyDistance: "",
+  airConditioningDistance: "",
+  garageDays: "1",
+};
+
+const localDate = (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+};
+
+const recordedFuel = (value: number) => Math.round((value + Number.EPSILON) * 1000) / 1000;
+const displayFuel = (value: number) => value.toFixed(3);
 
 const Form: React.FC<{
   setSelectedCar: React.Dispatch<React.SetStateAction<Car>>;
   selectedCar: Car;
 }> = ({ selectedCar, setSelectedCar }) => {
-  const [km, setKm] = useState<number | string>();
-  const [city, setCity] = useState<number | string>();
-  const [winter, setWinter] = useState<number | string>();
-  const [convoy, setConvoy] = useState<number | string>();
-  const [ac, setAc] = useState<number | string>();
-  const [garage, setGarage] = useState<number | string>(1);
+  const today = localDate(new Date());
+  const [drivingDate, setDrivingDate] = useState(today);
+  const [quantities, setQuantities] = useState<Quantities>(initialQuantities);
+  const [calculation, setCalculation] = useState<DailyVehicleCalculation | null>(null);
+  const [error, setError] = useState("");
 
-  const [resultKm, setResultKm] = useState<number>(0);
-  const [resultCity, setResultCity] = useState<number>(0);
-  const [resultWinter, setResultWinter] = useState<number>(0);
-  const [resultConvoy, setResultConvoy] = useState<number>(0);
-  const [resultAc, setResultAc] = useState<number>(0);
-  const [resultGarage, setResultGarage] = useState<number>(0);
-
-  const garageChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGarage(parseInt(e.currentTarget.value));
+  const changeQuantity = (name: keyof Quantities, value: string) => {
+    setQuantities((current) => ({ ...current, [name]: value }));
+    setCalculation(null);
+    setError("");
   };
 
-  const formSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (km) {
-      const result = ((km as number) * selectedCar.consumption) / 100;
-      setResultKm(result);
-      setResultGarage(selectedCar.consumption * 0.02 * (garage as number));
-    }
-    if (city) {
-      const resultCity = (((city as number) * selectedCar.consumption) / 100) * 0.1;
-      setResultCity(resultCity);
-    }
-    if (winter) {
-      const resultWinter = (((winter as number) * selectedCar.consumption) / 100) * 0.1;
-      setResultWinter(resultWinter);
-    }
-    if (ac) {
-      const resultAc = (((ac as number) * selectedCar.consumption) / 100) * 0.1;
-      setResultAc(resultAc);
-    }
-    if (convoy) {
-      const resultConvoy = (((convoy as number) * selectedCar.consumption) / 100) * 0.25;
-      setResultConvoy(resultConvoy);
-    }
+  const changeDrivingDate = (value: string) => {
+    setDrivingDate(value);
+    setCalculation(null);
+    setError("");
   };
 
-  const backClickHandler = () => {
-    setSelectedCar({ name: '', consumption: 0, img: '' });
+  const formSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const values = Object.fromEntries(
+      Object.entries(quantities).map(([name, value]) => [name, Number(value)])
+    ) as Record<keyof Quantities, number>;
+
+    if (!drivingDate) {
+      setError("Изберете дата на пътуване.");
+      return;
+    }
+    if (drivingDate > today) {
+      setError("Датата на пътуване не може да бъде в бъдещето.");
+      return;
+    }
+    if (!quantities.totalDistance) {
+      setError("Въведете общия брой километри.");
+      return;
+    }
+    if (Object.values(values).some((value) => !Number.isFinite(value) || value < 0)) {
+      setError("Стойностите не могат да бъдат отрицателни.");
+      return;
+    }
+    const conditionDistances = [
+      values.cityDistance,
+      values.winterDistance,
+      values.convoyDistance,
+      values.airConditioningDistance,
+    ];
+    if (conditionDistances.some((distance) => distance > values.totalDistance)) {
+      setError("Километрите за отделно условие не могат да надвишават общите километри.");
+      return;
+    }
+
+    const consumption = selectedCar.consumption;
+    const fuel = {
+      base: recordedFuel((values.totalDistance * consumption) / 100),
+      city: recordedFuel(((values.cityDistance * consumption) / 100) * 0.1),
+      winter: recordedFuel(((values.winterDistance * consumption) / 100) * 0.1),
+      convoy: recordedFuel(((values.convoyDistance * consumption) / 100) * 0.25),
+      airConditioning: recordedFuel(
+        ((values.airConditioningDistance * consumption) / 100) * 0.1
+      ),
+      garage: recordedFuel(consumption * 0.02 * values.garageDays),
+      total: 0,
+    };
+    fuel.total = recordedFuel(
+      fuel.base + fuel.city + fuel.winter + fuel.convoy + fuel.airConditioning + fuel.garage
+    );
+    setError("");
+    setCalculation({ drivingDate, vehicle: selectedCar, quantities: values, fuel });
   };
 
-  const againClickHandler = () => {
-    setKm('');
-    setCity('');
-    setWinter('');
-    setConvoy('');
-    setAc('');
-    setGarage(1);
-    setResultKm(0);
-    setResultCity(0);
-    setResultWinter(0);
-    setResultConvoy(0);
-    setResultAc(0);
-    setResultGarage(0);
+  const reset = () => {
+    setQuantities(initialQuantities);
+    setCalculation(null);
+    setError("");
   };
+
+  const fields: Array<{
+    name: keyof Quantities;
+    label: string;
+    description: string;
+    max: number;
+    testId: string;
+    result?: number;
+  }> = [
+    { name: "totalDistance", label: "Общо километри", description: `км по основна разходна норма (${selectedCar.consumption} %)`, max: 10000, testId: "fuel-base", result: calculation?.fuel.base },
+    { name: "cityDistance", label: "Километри в градски условия", description: "км в градски условия (10%)", max: 10000, testId: "fuel-city", result: calculation?.fuel.city },
+    { name: "winterDistance", label: "Километри в зимни условия", description: "км в зимни условия (10%)", max: 10000, testId: "fuel-winter", result: calculation?.fuel.winter },
+    { name: "convoyDistance", label: "Километри в колона", description: "км в колона (25%)", max: 10000, testId: "fuel-convoy", result: calculation?.fuel.convoy },
+    { name: "airConditioningDistance", label: "Километри с включен климатик", description: "км с включен климатик (10%)", max: 10000, testId: "fuel-ac", result: calculation?.fuel.airConditioning },
+    { name: "garageDays", label: "Вътрешно гаражни дни", description: "дни по (2%)", max: 31, testId: "fuel-garage", result: calculation?.fuel.garage },
+  ];
 
   return (
     <div className="form-container">
       <img className="background-image" src={selectedCar.img} alt="" />
-      <form className="form" onSubmit={formSubmitHandler}>
+      <form className="form" data-testid="selected-vehicle" data-vehicle-id={selectedCar.id} noValidate onSubmit={formSubmitHandler}>
         <h1>{selectedCar.name}</h1>
         <div className="form-group">
-          <div className="left-hand-side">
-            <input
-              id="km"
-              value={km}
-              min={0}
-              max={10000}
-              onChange={(e) => setKm(parseInt(e.target.value))}
-              type="number"
-              name="km"
-            />
-            <p>км по основна разходна норма ({selectedCar.consumption} %)</p>
-          </div>
-          <p className="result">{!!resultKm && (Math.trunc(resultKm * 1000) / 1000).toFixed(3)}</p>
+          <label htmlFor="driving-date">Дата на пътуване</label>
+          <input id="driving-date" name="drivingDate" type="date" max={today} value={drivingDate} onChange={(event) => changeDrivingDate(event.target.value)} />
         </div>
-        <div className="form-group">
-          <div className="left-hand-side">
-            <input
-              id="city"
-              name="city"
-              type="number"
-              onChange={(e) => {
-                setCity(parseInt(e.target.value));
-              }}
-              value={city}
-              min={0}
-              max={10000}
-            />
-            <p>км в градски условия (10%)</p>
+        {fields.map((field) => (
+          <div className="form-group" key={field.name}>
+            <div className="left-hand-side">
+              <label className="visually-hidden" htmlFor={field.name}>{field.label}</label>
+              <input id={field.name} name={field.name} type="number" step="any" min={0} max={field.max} value={quantities[field.name]} onChange={(event) => changeQuantity(field.name, event.target.value)} />
+              <p>{field.description}</p>
+            </div>
+            <p className="result" data-testid={field.testId}>{field.result === undefined ? "" : displayFuel(field.result)}</p>
           </div>
-          <p className="result">
-            {!!resultCity && (Math.trunc(resultCity * 1000) / 1000).toFixed(3)}
-          </p>
-        </div>
-        <div className="form-group">
-          <div className="left-hand-side">
-            <input
-              id="winter"
-              name="winter"
-              onChange={(e) => {
-                setWinter(parseInt(e.target.value));
-              }}
-              value={winter}
-              min={0}
-              max={10000}
-              type="number"
-            />
-            <p>км в зимни условия (10%)</p>
-          </div>
-          <p className="result">
-            {!!resultWinter && (Math.trunc(resultWinter * 1000) / 1000).toFixed(3)}
-          </p>
-        </div>
-        <div className="form-group">
-          <div className="left-hand-side">
-            <input
-              id="convoy"
-              name="convoy"
-              type="number"
-              onChange={(e) => {
-                setConvoy(parseInt(e.target.value));
-              }}
-              value={convoy}
-              min={0}
-              max={10000}
-            />
-            <p>км в колона (25%)</p>
-          </div>
-          <p className="result">
-            {!!resultConvoy && (Math.trunc(resultConvoy * 1000) / 1000).toFixed(3)}
-          </p>
-        </div>
-        <div className="form-group">
-          <div className="left-hand-side">
-            <input
-              id="ac"
-              name="ac"
-              type="number"
-              onChange={(e) => {
-                setAc(parseInt(e.target.value));
-              }}
-              value={ac}
-              min={0}
-              max={10000}
-            />
-            <p>с включен климатик (10%)</p>
-          </div>
-          <p className="result">{!!resultAc && (Math.trunc(resultAc * 1000) / 1000).toFixed(3)}</p>
-        </div>
-        <div className="form-group">
-          <div className="left-hand-side">
-            <p>Вътрешно гаражни</p>
-            <input onChange={garageChangeHandler} value={garage} max={31} min={1} type="number" />
-            <p>дни по (2%)</p>
-          </div>
-          <p className="result">
-            {!!resultGarage && (Math.trunc(resultGarage * 1000) / 1000).toFixed(3)}
-          </p>
-        </div>
-        {!!resultKm && (
-          <div className="combined">
-            <p>Общо</p>
-            <p className="result">
-              {(
-                Math.trunc(
-                  (resultAc + resultCity + resultConvoy + resultGarage + resultKm + resultWinter) *
-                    1000
-                ) / 1000
-              ).toFixed(3)}
-            </p>
-          </div>
+        ))}
+        {error && <p role="alert">{error}</p>}
+        {calculation && (
+          <>
+            <div className="combined">
+              <p>Общо</p>
+              <p className="result" data-testid="fuel-total">{displayFuel(calculation.fuel.total)}</p>
+            </div>
+            <p className="calculation-status">Готово за запис</p>
+          </>
         )}
-        <button className="form-button" type="submit">
-          Пресметни
-        </button>
-        <button className="form-button" onClick={backClickHandler} type="button">
-          Назад
-        </button>
-        <button className="form-button" onClick={againClickHandler} type="button">
-          Отначало
-        </button>
+        <button className="form-button" type="submit">Пресметни</button>
+        <button className="form-button" onClick={() => setSelectedCar({ id: "", name: "", consumption: 0, img: "" })} type="button">Назад</button>
+        <button className="form-button" onClick={reset} type="button">Отначало</button>
       </form>
     </div>
   );

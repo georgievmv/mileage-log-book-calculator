@@ -3,32 +3,38 @@ import Form from "./pages/Form";
 import Cars from "./pages/Cars";
 import { useState } from "react";
 export type Car = {
+  id: string;
   name: string;
   consumption: number;
   img: string;
 };
 const cars: Car[] = [
   {
+    id: "chevrolet",
     name: "Шевролет",
     consumption: 8.5,
     img: "806855-Cruze-Chevrolet-Back-view.jpg",
   },
   {
+    id: "mitsubishi",
     name: "Мицубиши",
     consumption: 8.19,
     img: "806855-Cruze-Chevrolet-Back-view.jpg",
   },
   {
+    id: "ford-fiesta",
     name: "Форд Фиеста",
     consumption: 8,
     img: "ford-fiesta.jpg",
   },
   {
+    id: "lada-niva",
     name: "Лада Нива",
     consumption: 10.5,
     img: "mountains-lada-niva-ваз2121-lada-niva-wallpaper-preview.jpg",
   },
   {
+    id: "renault-megane",
     name: "Рено Меган",
     consumption: 6.5,
     img: "IMG_1885.JPEG",
@@ -37,6 +43,7 @@ const cars: Car[] = [
 
 function App() {
   const [selectedCar, setSelectedCar] = useState<Car>({
+    id: "",
     name: "",
     consumption: 0,
     img: "",

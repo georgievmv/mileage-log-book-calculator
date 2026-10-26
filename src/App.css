@@ -53,6 +53,28 @@ input {
 input:focus {
   outline: none;
 }
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+[role="alert"] {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+.calculation-status {
+  color: #145214;
+  font-weight: bold;
+}
 .form-group,
 .combined {
   font-weight: bold;
