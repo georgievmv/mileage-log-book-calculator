@@ -67,7 +67,7 @@ test("the existing whole-number mileage and quantity limits remain enforced", ()
   );
 });
 
-test("recorded components are rounded to three decimals and their visible sum is the total", () => {
+test("recorded components are truncated to three decimals and their visible sum is the total", () => {
   render(<App />);
   userEvent.click(screen.getByRole("button", { name: "Шевролет" }));
 
@@ -79,12 +79,12 @@ test("recorded components are rounded to three decimals and their visible sum is
   userEvent.click(screen.getByRole("button", { name: "Пресметни" }));
 
   expect(screen.getByTestId("fuel-base")).toHaveTextContent("8.500");
-  expect(screen.getByTestId("fuel-city")).toHaveTextContent("0.281");
+  expect(screen.getByTestId("fuel-city")).toHaveTextContent("0.280");
   expect(screen.getByTestId("fuel-winter")).toHaveTextContent("0.187");
-  expect(screen.getByTestId("fuel-convoy")).toHaveTextContent("0.234");
+  expect(screen.getByTestId("fuel-convoy")).toHaveTextContent("0.233");
   expect(screen.getByTestId("fuel-ac")).toHaveTextContent("0.374");
   expect(screen.getByTestId("fuel-garage")).toHaveTextContent("0.170");
-  expect(screen.getByTestId("fuel-total")).toHaveTextContent("9.746");
+  expect(screen.getByTestId("fuel-total")).toHaveTextContent("9.744");
   expect(screen.getByText("Готово за запис")).toBeInTheDocument();
 
   userEvent.clear(screen.getByLabelText("Общо километри"));

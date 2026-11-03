@@ -29,7 +29,7 @@ const localDate = (date: Date) => {
 };
 
 const recordedFuel = (value: number) =>
-  Math.round((value + Number.EPSILON) * 1000) / 1000;
+  Math.trunc(value * 1000) / 1000;
 const displayFuel = (value: number) => value.toFixed(3);
 
 const Form: React.FC<{

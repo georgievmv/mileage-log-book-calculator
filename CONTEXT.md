@@ -25,7 +25,7 @@ The totals of every entered quantity and every calculated fuel component from on
 _Avoid_: Fleet total, combined report
 
 **Recorded fuel value**:
-A fuel quantity rounded normally to three decimal places before it becomes part of a daily vehicle entry. Daily and monthly totals are sums of these recorded values.
+A fuel quantity truncated to three decimal places before it becomes part of a daily vehicle entry. Digits beyond the third decimal are discarded rather than rounded upward. Daily and monthly totals are sums of these recorded values.
 _Avoid_: Display-only value, truncated value
 
 ## Delivery status
